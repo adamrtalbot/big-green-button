@@ -1,0 +1,11 @@
+name: studios-launch-page
+channels:
+  - conda-forge
+  - defaults
+dependencies:
+  - python>=3.9
+  - flask>=2.0.0
+  - requests>=2.28.0
+  - pip
+  - pip:
+    - types-requests>=2.28.0 
