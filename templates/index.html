@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Launch Page</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+            background-color: #f5f5f5;
+        }
+        .launch-button {
+            padding: 20px 50px;
+            font-size: 24px;
+            font-weight: bold;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+            transition: all 0.3s ease;
+        }
+        .launch-button:hover {
+            background-color: #45a049;
+            transform: scale(1.05);
+            box-shadow: 0 6px 12px rgba(0, 0, 0, 0.3);
+        }
+        .launch-button:disabled {
+            background-color: #cccccc;
+            cursor: not-allowed;
+            transform: none;
+            box-shadow: none;
+        }
+        #status {
+            margin-top: 20px;
+            padding: 10px;
+            border-radius: 4px;
+            display: none;
+        }
+        .success {
+            background-color: #dff0d8;
+            color: #3c763d;
+            border: 1px solid #d6e9c6;
+        }
+        .error {
+            background-color: #f2dede;
+            color: #a94442;
+            border: 1px solid #ebccd1;
+        }
+    </style>
+</head>
+<body>
+    <button id="launchBtn" class="launch-button">LAUNCH</button>
+    <div id="status"></div>
+
+    <script>
+        document.getElementById('launchBtn').addEventListener('click', function() {
+            const button = this;
+            const statusDiv = document.getElementById('status');
+            
+            // Disable button while processing
+            button.disabled = true;
+            button.textContent = 'LAUNCHING...';
+            
+            // Make API call to launch endpoint
+            fetch('/launch', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                }
+            })
+            .then(response => response.json())
+            .then(data => {
+                statusDiv.style.display = 'block';
+                
+                if (data.success) {
+                    statusDiv.className = 'success';
+                    statusDiv.textContent = data.message + ' Redirecting to run page...';
+                    
+                    // If we have a run URL, redirect to it after a short delay
+                    if (data.runUrl) {
+                        setTimeout(() => {
+                            window.location.href = data.runUrl;
+                        }, 1500);
+                    } else {
+                        // If no run URL, just reset the button
+                        setTimeout(() => {
+                            button.disabled = false;
+                            button.textContent = 'LAUNCH';
+                            statusDiv.textContent = data.message + ' (No run URL available)';
+                        }, 3000);
+                    }
+                } else {
+                    statusDiv.className = 'error';
+                    statusDiv.textContent = data.message;
+                    
+                    // Re-enable button on error
+                    button.disabled = false;
+                    button.textContent = 'LAUNCH';
+                }
+            })
+            .catch(error => {
+                statusDiv.style.display = 'block';
+                statusDiv.className = 'error';
+                statusDiv.textContent = 'Error: ' + error.message;
+                
+                // Re-enable button on error
+                button.disabled = false;
+                button.textContent = 'LAUNCH';
+            });
+        });
+    </script>
+</body>
+</html> 
