@@ -1,0 +1,18 @@
+# Connect configuration for Studios Launch Page
+app:
+  type: service
+  service_url: http://localhost:5000
+  # The Connect binary will proxy requests to this URL
+  # No need for working_dir as we'll run the app separately
+  environment:
+    PYTHONUNBUFFERED: "1"
+    FLASK_APP: "app.py"
+    # Seqera Platform credentials will be provided at runtime
+    # SEQERA_API_BASE: "https://api.cloud.seqera.io"
+    # SEQERA_ACCESS_TOKEN: "your_access_token"
+    # SEQERA_WORKSPACE_ID: "your_workspace_id"
+    # SEQERA_ACTION_ID: "your_action_id"
+    # Required for URL construction if not available from API
+    # SEQERA_ORG_NAME: "your_organization_name"
+    # SEQERA_WORKSPACE_NAME: "your_workspace_name"
+    # SEQERA_WEB_BASE: "https://cloud.seqera.io"
