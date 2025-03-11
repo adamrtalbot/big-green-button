@@ -7,6 +7,8 @@ app:
   environment:
     PYTHONUNBUFFERED: "1"
     FLASK_APP: "app.py"
+    # Note: Sensitive environment variables should be provided at runtime
+    # or through the Connect client's environment
     # Seqera Platform credentials will be provided at runtime
     # SEQERA_API_BASE: "https://api.cloud.seqera.io"
     # SEQERA_ACCESS_TOKEN: "your_access_token"
@@ -16,3 +18,5 @@ app:
     # SEQERA_ORG_NAME: "your_organization_name"
     # SEQERA_WORKSPACE_NAME: "your_workspace_name"
     # SEQERA_WEB_BASE: "https://cloud.seqera.io"
+
+# No need for python section as we'll run the app separately

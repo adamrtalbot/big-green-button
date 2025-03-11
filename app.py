@@ -3,6 +3,7 @@ import os
 import requests
 import json
 import logging
+import argparse
 
 app = Flask(__name__)
 logging.basicConfig(level=logging.INFO)
@@ -154,6 +155,17 @@ def launch_pipeline():
                             f"Found workspaceName in workflow details: {workspace_name}"
                         )
 
+            # Ensure we have org_name and workspace_name, using environment variables as fallback
+            if not org_name:
+                org_name = os.environ.get("SEQERA_ORG_NAME", "")
+                logging.info(f"Using fallback orgName from environment: {org_name}")
+
+            if not workspace_name:
+                workspace_name = os.environ.get("SEQERA_WORKSPACE_NAME", "")
+                logging.info(
+                    f"Using fallback workspaceName from environment: {workspace_name}"
+                )
+
             # Construct the URL if we have all the necessary components
             if workflow_id and org_name and workspace_name and seqera_web_base:
                 run_url = f"{seqera_web_base}/orgs/{org_name}/workspaces/{workspace_name}/watch/{workflow_id}"
@@ -184,5 +196,34 @@ def launch_pipeline():
         )
 
 
+def parse_args():
+    """Parse command line arguments."""
+    parser = argparse.ArgumentParser(description="Studios Launch Page")
+    parser.add_argument(
+        "--host",
+        default=os.environ.get("HOST", "0.0.0.0"),
+        help="Host to bind to (default: 0.0.0.0)",
+    )
+    parser.add_argument(
+        "--port",
+        type=int,
+        default=int(os.environ.get("PORT", 5000)),
+        help="Port to bind to (default: 5000)",
+    )
+    parser.add_argument(
+        "--debug",
+        action="store_true",
+        default=os.environ.get("DEBUG", "").lower() in ("true", "1", "yes"),
+        help="Enable debug mode",
+    )
+    return parser.parse_args()
+
+
+# WSGI entry point for Connect binary
+application = app
+
+
 if __name__ == "__main__":
-    app.run(host="0.0.0.0", port=5000, debug=True)
+    args = parse_args()
+    logging.info(f"Starting server on {args.host}:{args.port} (debug={args.debug})")
+    app.run(host=args.host, port=args.port, debug=args.debug)
